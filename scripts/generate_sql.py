@@ -3,7 +3,7 @@ import sys
 
 from ai_powered_chat_database.database.schema import format_schema, get_database_schema
 from ai_powered_chat_database.llm.sql_generator import generate_sql
-
+from ai_powered_chat_database.database.sql_validator import validate_sql
 
 def main():
     # Allow a question from the terminal.
@@ -32,6 +32,18 @@ def main():
 
     print("\n=== EXPLANATION ===")
     print(result.explanation)
+
+    print("\n=== SQL VALIDATION ===")
+
+    validation = validate_sql(
+        sql=result.sql,
+        schema=schema,
+    )
+
+    if validation.is_valid:
+        print("VALID: SQL passed the current validation rules.")
+    else:
+        print("REJECTED:", validation.error)
 
     print("\nSQL was NOT executed.")
 
