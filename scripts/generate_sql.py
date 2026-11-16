@@ -1,9 +1,7 @@
-
-import sys
-
 from ai_powered_chat_database.database.schema import format_schema, get_database_schema
-from ai_powered_chat_database.llm.sql_generator import generate_sql
 from ai_powered_chat_database.database.sql_validator import validate_sql
+from ai_powered_chat_database.llm.sql_generator import generate_sql
+
 
 def main():
     # Allow a question from the terminal.
