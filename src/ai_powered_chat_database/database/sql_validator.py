@@ -9,6 +9,7 @@ from sqlglot.optimizer.qualify import qualify
 class ValidationResult:
     is_valid: bool
     error: str | None = None
+    retryable: bool = False
 
 
 # Functions allowed in our first Text-to-SQL version.
@@ -80,7 +81,7 @@ def validate_sql(sql: str,schema: list[dict]) -> ValidationResult:
                 return ValidationResult(False, "Cross-database references are not allowed.")
 
             if table.name.lower() not in schema_mapping:
-                return ValidationResult(False, f"Unknown or unauthorized table: {table.name}")
+                return ValidationResult(False, f"Unknown or unauthorized table: {table.name}", retryable=True)
 
         # Reject functions outside our approved subset.
         for function in expression.find_all(exp.Func):
@@ -101,4 +102,4 @@ def validate_sql(sql: str,schema: list[dict]) -> ValidationResult:
         return ValidationResult(True)
 
     except SqlglotError as exc:
-        return ValidationResult(False,f"SQL parsing or column validation failed: {exc}")
+        return ValidationResult(False,f"SQL parsing or column validation failed: {exc}", retryable=True)

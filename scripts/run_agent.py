@@ -20,9 +20,37 @@ def main():
     print(graph.get_graph().draw_mermaid())
 
     # Execute the graph.
-    result = graph.invoke({
-        "question": question,
-    })
+    result = graph.invoke(
+        {"question": question},
+        config={"recursion_limit": 25},
+    )
+
+
+    print("\n=== SQL GENERATION HISTORY ===")
+
+    for attempt in result.get("attempt_history", []):
+        print(f"\nAttempt {attempt['attempt']}")
+        print("SQL:")
+        print(attempt["sql"])
+
+        if attempt["valid"]:
+            print("Validation: PASSED")
+        else:
+            print("Validation: FAILED")
+            print("Error:", attempt["error"])
+
+    print("\n=== CORRECTION SUMMARY ===")
+    print(
+        "Total generations:",
+        result.get("generation_attempts", 0),
+    )
+    print(
+        "Corrections used:",
+        max(
+            result.get("generation_attempts", 1) - 1,
+            0,
+        ),
+    )
 
     print("\n=== GENERATED SQL ===")
     print(result.get("sql", ""))
